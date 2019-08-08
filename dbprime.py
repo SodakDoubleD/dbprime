@@ -1,4 +1,4 @@
-
+# import os
 
 class MockRecord:
     '''
@@ -9,20 +9,18 @@ class MockRecord:
     The initialized object contains the newly inserted primary key value.
     '''
 
-    insertion_handlers = {
-        'psycopg2': insert_postgres_record,
-        'MySQLdb': insert_mysql_record,
-    }
-
     def __init__(self, database_module, database_args, primary_key_column, **kwargs):
-        self._db_connection = database_module.connect(**database_args)
-        self._db_cursor = self._db_connection.cursor()
-        self._pk_column = primary_key_column
+        # Check if we can even handle this module before trying anything else
         try:
             self.insertion_handler = self.__class__.insertion_handlers[database_module.__name__]
         except KeyError:
-            print('Unhandled database module: {}'.format(database_module.__name__))
-            print('Supported modules: {}'.format(self.__class__.insertion_handlers.keys()))
+            error_message = 'Unhandled database module: {} Supported modules: {}'\
+                .format(database_module.__name__, self.__class__.insertion_handlers.keys())
+            raise KeyError(error_message)
+
+        self._db_connection = database_module.connect(**database_args)
+        self._db_cursor = self._db_connection.cursor()
+        self._pk_column = primary_key_column
 
         for key, value in kwargs.items():
             setattr(self, key, value)
@@ -41,3 +39,14 @@ class MockRecord:
         # insert a record into the db using the db connection
         # set the value of the primary key as an attr on the object instance
         pass
+
+    insertion_handlers = {
+        'psycopg2': insert_postgres_record,
+        'MySQLdb': insert_mysql_record,
+    }
+
+# def test():
+#     test = MockRecord(os, {}, 'test')
+
+# if __name__ == '__main__':
+#     test()
