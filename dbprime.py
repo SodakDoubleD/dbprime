@@ -2,7 +2,7 @@
 
 class MockRecord:
     '''
-    Requires a database connection object that conforms to the
+    Requires a python database module that conforms to the
     PEP-249 database API specification.
 
     Unpacks and inserts a database record based on the passed in kwargs.
@@ -10,7 +10,7 @@ class MockRecord:
     '''
 
     def __init__(self, database_module, database_args, primary_key_column, **kwargs):
-        # Check if we can even handle this module before trying anything else
+        # Check if we can even handle the db module before trying anything else
         try:
             self.insertion_handler = self.__class__.insertion_handlers[database_module.__name__]
         except KeyError:
