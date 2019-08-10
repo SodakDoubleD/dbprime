@@ -30,19 +30,19 @@ class MockRecord:
         # close db connection
         pass
 
-    def insert_postgres_record(self):
+    def _insert_postgres_record(self):
         # insert a record into the db using the db connection
         # set the value of the primary key as an attr on the object instance
         pass
 
-    def insert_mysql_record(self):
+    def _insert_mysql_record(self):
         # insert a record into the db using the db connection
         # set the value of the primary key as an attr on the object instance
         pass
 
     insertion_handlers = {
-        'psycopg2': insert_postgres_record,
-        'MySQLdb': insert_mysql_record,
+        'psycopg2': _insert_postgres_record,
+        'MySQLdb': _insert_mysql_record,
     }
 
 # def test():

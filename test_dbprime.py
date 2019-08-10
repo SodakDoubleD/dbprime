@@ -1,6 +1,6 @@
-# import dbprime
+import dbprime
 
-# import psycopg2
+import psycopg2
 # import MySQLdb
 import unittest
 
