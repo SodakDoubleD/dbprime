@@ -53,6 +53,7 @@ class MockRecord:
                                                              self.pk_column,
                                                              getattr(self, self.pk_column))
                 self._db_cursor.execute(sql)
+                self._db_connection.commit()
             except Exception as e:
                 print(e)
 
@@ -90,6 +91,7 @@ class MockRecord:
         as an attribute on the object.
         '''
         self._db_cursor.execute(sql)
+        self._db_connection.commit()
         primary_key = self._db_cursor.fetchone()[0]
         setattr(self, self.pk_column, primary_key)
 
