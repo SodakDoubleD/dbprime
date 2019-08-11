@@ -71,7 +71,17 @@ class MockRecord:
         self._insert_record(sql)
 
     def _insert_mysql_record(self):
-        pass
+        # Definitely not an ideal solution. This assumes the user is inserting a
+        # record into a table with an AUTO_INCREMENT primary key column.
+        sql = """
+            INSERT INTO {} ({})
+            VALUES ({});
+            SELECT LAST_INSERT_ID();
+        """.format(self.table_name,
+                   ', '.join(self.columns),
+                   ', '.join([str(getattr(self, key)) for key in self.columns]))
+
+        self._insert_record(sql)
 
     def _insert_record(self, sql):
         '''
