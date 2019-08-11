@@ -5,6 +5,9 @@ class MockRecord:
     Requires a python database module that conforms to the
     PEP-249 database API specification.
 
+    Each MockRecord object creates and closes its own db connection so the user
+    doesn't have to be concerned with connection management while writing tests.
+
     Unpacks and inserts a database record based on the passed in kwargs.
     The initialized object contains the newly inserted primary key value.
     '''
@@ -56,8 +59,6 @@ class MockRecord:
         self._db_connection.close()
 
     def _insert_postgres_record(self):
-        # insert a record into the db using the db connection
-        # set the value of the primary key as an attr on the object instance
         sql = """
             INSERT INTO {} ({})
             VALUES ({})
@@ -67,15 +68,20 @@ class MockRecord:
                    ', '.join([str(getattr(self, key)) for key in self.columns]),
                    self.pk_column)
 
-        self._db_cursor.execute(sql)
-
-        primary_key = self._db_cursor.fetchone()[0]
-        setattr(self, self.pk_column, primary_key)
+        self._insert_record(sql)
 
     def _insert_mysql_record(self):
-        # insert a record into the db using the db connection
-        # set the value of the primary key as an attr on the object instance
         pass
+
+    def _insert_record(self, sql):
+        '''
+        Takes a database-specific sql string as an arg.
+        Inserts a new database record, returning and setting the primary key
+        as an attribute on the object.
+        '''
+        self._db_cursor.execute(sql)
+        primary_key = self._db_cursor.fetchone()[0]
+        setattr(self, self.pk_column, primary_key)
 
     insertion_handlers = {
         'psycopg2': _insert_postgres_record,
