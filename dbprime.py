@@ -47,10 +47,13 @@ class MockRecord:
         # We're going to assume that if the object doesn't have a primary key set
         # that we failed to insert the record in the first place.
         if hasattr(self, self.pk_column):
-            sql = 'DELETE FROM {} WHERE {} = {};'.format(self.table_name,
-                                                         self.pk_column,
-                                                         getattr(self, self.pk_column))
-            self._db_cursor.execute(sql)
+            try:
+                sql = 'DELETE FROM {} WHERE {} = {};'.format(self.table_name,
+                                                             self.pk_column,
+                                                             getattr(self, self.pk_column))
+                self._db_cursor.execute(sql)
+            except Exception as e:
+                print(e)
 
         self._db_connection.close()
 
