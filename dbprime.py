@@ -102,7 +102,7 @@ class MockRecord:
 
 def test():
     dbargs = {
-        'user': 'ddirk',
+        'user': 'test',
         'password': 'test',
         'database': 'test_db',
         'host': 'localhost'
