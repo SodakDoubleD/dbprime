@@ -33,10 +33,8 @@ class MockRecord:
         self.pk_column = primary_key_column
         self.columns = sorted(list(kwargs.keys()))
         if not self.columns:
-            print(self.columns)
             raise Exception('Can\'t insert a database record with no values. ' \
                 'You have to specify columns/values in the kwargs of MockRecord...')
-        print(self.columns)
 
         for key, value in kwargs.items():
             setattr(self, key, value)
@@ -92,7 +90,7 @@ def test():
         'host': 'localhost'
     }
 
-    mock_rec = MockRecord(psycopg2, dbargs, 'test_table', 'test_tableid', num_val=123)
+    mock_rec = MockRecord(psycopg2, dbargs, 'test_table', 'test_tableid')
 
 if __name__ == '__main__':
     test()
