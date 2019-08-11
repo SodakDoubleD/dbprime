@@ -16,7 +16,7 @@ class MockRecord:
                 self.__class__.insertion_handlers[database_module.__name__]
 
         except KeyError:
-            error_message = 'Unhandled database module: {} Supported modules: {}'\
+            error_message = 'Unhandled database module: {} \n Supported modules: {}'\
                 .format(database_module.__name__,
                         self.__class__.insertion_handlers.keys())
 
@@ -31,18 +31,27 @@ class MockRecord:
 
         self.table_name = table_name
         self.pk_column = primary_key_column
-        self.columns = sorted([kwargs.keys()])
+        self.columns = sorted(list(kwargs.keys()))
+        if not self.columns:
+            print(self.columns)
+            raise Exception('Can\'t insert a database record with no values. ' \
+                'You have to specify columns/values in the kwargs of MockRecord...')
+        print(self.columns)
 
         for key, value in kwargs.items():
             setattr(self, key, value)
 
+        self.insertion_handler(self)
+
     def __del__(self):
-        # delete inserted record
-        # close db connection
-        sql = 'DELETE FROM {} WHERE {} = {};'.format(self.table_name,
-                                                     self.pk_column,
-                                                     getattr(self, self.pk_column))
-        self._db_cursor.execute(sql)
+        # We're going to assume that if the object doesn't have a primary key set
+        # that we failed to insert the record in the first place.
+        if hasattr(self, self.pk_column):
+            sql = 'DELETE FROM {} WHERE {} = {};'.format(self.table_name,
+                                                         self.pk_column,
+                                                         getattr(self, self.pk_column))
+            self._db_cursor.execute(sql)
+
         self._db_connection.close()
 
     def _insert_postgres_record(self):
@@ -54,7 +63,8 @@ class MockRecord:
             RETURNING {};
         """.format(self.table_name,
                    ', '.join(self.columns),
-                   ', '.join([getattr(self, key) for key in self.columns]))
+                   ', '.join([str(getattr(self, key)) for key in self.columns]),
+                   self.pk_column)
 
         self._db_cursor.execute(sql)
 
@@ -73,12 +83,13 @@ class MockRecord:
 
 def test():
     dbargs = {
-        'user': 'test',
+        'user': 'ddirk',
         'password': 'test',
-        'db': '',
-        'host': ''
+        'database': 'test_db',
+        'host': 'localhost'
     }
-    mock_rec = MockRecord(psycopg2, dbargs, 'test_table', 'test_tableid')
+
+    mock_rec = MockRecord(psycopg2, dbargs, 'test_table', 'test_tableid', num_val=123)
 
 if __name__ == '__main__':
     test()
