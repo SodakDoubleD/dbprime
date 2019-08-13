@@ -16,3 +16,8 @@
 #### What it's not good for:
 * Creating a bunch of complex database records. It can be done, but it's not pretty
 * In the case of tables that reference other tables, you have to create the FK object first and then supply the linked value from that object to the secondarily-created object that references it. Not ideal.
+
+
+#### TODO:
+* Add support for more databases than just postgres and mysql
+* Add a more graceful/robust way to return the primary key when inserting mysql records
