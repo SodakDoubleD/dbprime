@@ -16,6 +16,7 @@
 #### What it's not good for:
 * Creating a bunch of complex database records. It can be done, but it's not pretty
 * In the case of tables that reference other tables, you have to create the FK object first and then supply the linked value from that object to the secondarily-created object that references it. Not ideal.
+* **Cleanup of inserted records is almost always reliable, but _not_ guaranteed.** I'd strongly recommend against using this with any production database unless you accept the fact that garbage records may be left behind at some point.
 
 
 #### TODO:
