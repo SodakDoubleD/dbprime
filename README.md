@@ -11,6 +11,7 @@
 * Creation/deletion of simple database records to be used in unit tests
 * Legitimate end-to-end query verification: insert a basic record and ensure that your query runs without error
 * Testing the relationship between the database and the python code that queries it
+* Best part: **_no dependencies_**. The dbprime module is completely self-contained.
 
 #### What it's not good for:
 * Creating a bunch of complex database records. It can be done, but it's not pretty
