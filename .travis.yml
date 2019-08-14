@@ -6,4 +6,4 @@ before_script:
   - psql -c 'CREATE TABLE IF NOT EXISTS test_db (test_tableid SERIAL PRIMARY KEY, var_field VARCHAR, var_field2 VARCHAR, num_val INT);' -U postgres
 install:
   - pip install psycopg2
-script: test_dbprime.py
+script: ./test_dbprime.py
