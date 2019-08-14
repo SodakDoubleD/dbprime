@@ -1,8 +1,6 @@
 language: python
 python: "3.6"
 services: postgresql
-before_install:
-  - sudo apt install postgresql-contrib
 before_script:
   - psql -c 'CREATE DATABASE IF NOT EXISTS test_db (test_tableid SERIAL PRIMARY KEY, var_field VARCHAR, var_field2 VARCHAR, num_val INT);' -U postgres
 install:
