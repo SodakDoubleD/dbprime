@@ -9,8 +9,8 @@ class TestPostgres(unittest.TestCase):
 
     def setUp(self):
         self.dbargs = {
-            'user': 'test',
-            'password': 'test',
+            'user': 'postgres',
+            'password': '',
             'database': 'test_db',
             'host': 'localhost'
         }
