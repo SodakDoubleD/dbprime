@@ -3,8 +3,7 @@ python: "3.6"
 services: postgresql
 before_script:
   - psql -c 'CREATE DATABASE test_db;' -U postgres
-  - psql -c '\connect' -U postgres
-  - psql -c 'SELECT current_database();' -U postgres
+  - psql -c '\c test_db' -U postgres
   - psql -c 'CREATE TABLE IF NOT EXISTS test_table (test_tableid SERIAL PRIMARY KEY, var_field VARCHAR, var_field2 VARCHAR, num_val INT);' -U postgres
   - psql -c '\dt' -U postgres
 install:

@@ -61,7 +61,7 @@ class MockRecord:
 
     def _insert_postgres_record(self):
         sql = """
-            INSERT INTO public.{} ({})
+            INSERT INTO {} ({})
             VALUES ({})
             RETURNING {};
         """.format(self.table_name,
