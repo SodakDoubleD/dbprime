@@ -1,5 +1,6 @@
 # dbprime
 ### Used to create temporary mocked database records for integration testing.
+https://travis-ci.org/SodakDoubleD/dbprime.svg?branch=master
 
 #### How it works:
 * Hand the MockRecord constructor a PEP-249 compliant python database module, database args to connect with, a table name, a primary key column, and any other key/value pairs that you wish to fill in the mocked database record
