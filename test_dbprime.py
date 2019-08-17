@@ -11,7 +11,7 @@ class TestPostgres(unittest.TestCase):
         self.dbargs = {
             'user': 'postgres',
             'password': '',
-            'database': 'test_db',
+            'database': 'postgres',
             'host': 'localhost'
         }
         self.dbcon = psycopg2.connect(**self.dbargs)
