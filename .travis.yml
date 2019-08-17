@@ -9,5 +9,5 @@ before_script:
   - psql -c '\dt' -U postgres
 install:
   - pip install psycopg2
-  - pip install MySQLdb
+  - pip install mysqlclient
 script: python -m unittest test_dbprime.py
