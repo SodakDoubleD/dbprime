@@ -80,12 +80,20 @@ class MockRecord:
         sql = """
             INSERT INTO {} ({})
             VALUES ({});
-            SELECT LAST_INSERT_ID();
         """.format(self.table_name,
                    ', '.join(self.columns),
                    ', '.join([str(getattr(self, key)) for key in self.columns]))
 
         self._insert_record(sql)
+        self._db_cursor = self._db_connection.cursor()
+        self._db_cursor.execute(sql)
+        self._db_connection.commit()
+
+        self._db_cursor.execute("SELECT LAST_INSERT_ID();")
+        primary_key = self._db_cursor.fetchone()[0]
+        self._db_cursor.close()
+
+        setattr(self, self.pk_column, primary_key)
 
     def _insert_record(self, sql):
         '''
