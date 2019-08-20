@@ -10,7 +10,7 @@ class TestMySQL(unittest.TestCase):
         self.dbargs = {
             'user': 'root',
             'password': '',
-            'database': 'mysql',
+            'database': 'test_db',
             'host': '127.0.0.1'
         }
         self.dbcon = MySQLdb.connect(**self.dbargs)

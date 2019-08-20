@@ -6,8 +6,7 @@ services:
 before_script:
   - psql -c 'CREATE TABLE IF NOT EXISTS test_table (test_tableid SERIAL PRIMARY KEY, var_field VARCHAR, var_field2 VARCHAR, num_val INT);' -U postgres
   - mysql -e 'CREATE DATABASE test_db;'
-  - mysql -e 'USE test_db;'
-  - mysql -e 'CREATE TABLE IF NOT EXISTS test_table (test_tableid SERIAL PRIMARY KEY, var_field VARCHAR(100), var_field2 VARCHAR(100), num_val INT);'
+  - mysql -e 'USE test_db; CREATE TABLE IF NOT EXISTS test_table (test_tableid SERIAL PRIMARY KEY, var_field VARCHAR(100), var_field2 VARCHAR(100), num_val INT);'
 install:
   - pip install psycopg2
   - pip install mysqlclient
