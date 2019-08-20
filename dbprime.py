@@ -27,11 +27,11 @@ class MockRecord:
 
         try:
             self._db_connection = database_module.connect(**database_args)
-            self._db_cursor = self._db_connection.cursor()
         except Exception as e:
             print(e)
             raise
 
+        self._db_cursor = None
         self.table_name = table_name
         self.pk_column = primary_key_column
         self.columns = sorted(list(kwargs.keys()))
@@ -52,8 +52,11 @@ class MockRecord:
                 sql = 'DELETE FROM {} WHERE {} = {};'.format(self.table_name,
                                                              self.pk_column,
                                                              getattr(self, self.pk_column))
+
+                self._db_cursor = self._db_connection.cursor()
                 self._db_cursor.execute(sql)
                 self._db_connection.commit()
+                self._db_cursor.close()
             except Exception as e:
                 print(e)
 
@@ -90,9 +93,11 @@ class MockRecord:
         Inserts a new database record, returning and setting the primary key
         as an attribute on the object.
         '''
+        self._db_cursor = self._db_connection.cursor()
         self._db_cursor.execute(sql)
         self._db_connection.commit()
         primary_key = self._db_cursor.fetchone()[0]
+        self._db_cursor.close()
         setattr(self, self.pk_column, primary_key)
 
     insertion_handlers = {
