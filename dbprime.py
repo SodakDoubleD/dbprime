@@ -90,6 +90,7 @@ class MockRecord:
         self._db_connection.commit()
 
         self._db_cursor.execute("SELECT LAST_INSERT_ID();")
+        self._db_connection.commit()
         primary_key = self._db_cursor.fetchone()[0]
         self._db_cursor.close()
 
