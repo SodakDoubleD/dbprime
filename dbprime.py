@@ -31,7 +31,7 @@ class MockRecord:
             print(e)
             raise
 
-        self._db_cursor = None
+        self._db_cursor = self._db_connection.cursor()
         self.table_name = table_name
         self.pk_column = primary_key_column
         self.columns = sorted(list(kwargs.keys()))
@@ -53,10 +53,10 @@ class MockRecord:
                                                              self.pk_column,
                                                              getattr(self, self.pk_column))
 
-                self._db_cursor = self._db_connection.cursor()
                 self._db_cursor.execute(sql)
                 self._db_connection.commit()
                 self._db_cursor.close()
+
             except Exception as e:
                 print(e)
 
@@ -73,6 +73,8 @@ class MockRecord:
                    self.pk_column)
 
         self._insert_record(sql)
+        primary_key = self._db_cursor.fetchone()[0]
+        setattr(self, self.pk_column, primary_key)
 
     def _insert_mysql_record(self):
         # Definitely not an ideal solution. This assumes the user is inserting a
@@ -85,29 +87,17 @@ class MockRecord:
                    ', '.join([str(getattr(self, key)) for key in self.columns]))
 
         self._insert_record(sql)
-        self._db_cursor = self._db_connection.cursor()
-        self._db_cursor.execute(sql)
-        self._db_connection.commit()
-
         self._db_cursor.execute("SELECT LAST_INSERT_ID();")
-        self._db_connection.commit()
         primary_key = self._db_cursor.fetchone()[0]
-        self._db_cursor.close()
-
         setattr(self, self.pk_column, primary_key)
 
     def _insert_record(self, sql):
         '''
         Takes a database-specific sql string as an arg.
-        Inserts a new database record, returning and setting the primary key
-        as an attribute on the object.
+        Inserts a new database record.
         '''
-        self._db_cursor = self._db_connection.cursor()
         self._db_cursor.execute(sql)
         self._db_connection.commit()
-        primary_key = self._db_cursor.fetchone()[0]
-        self._db_cursor.close()
-        setattr(self, self.pk_column, primary_key)
 
     insertion_handlers = {
         'psycopg2': _insert_postgres_record,
