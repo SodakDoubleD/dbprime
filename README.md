@@ -10,7 +10,6 @@
 
 #### What it's good for:
 * Creation/deletion of simple database records to be used in unit tests
-* Legitimate end-to-end query verification: insert a basic record and ensure that your query runs without error
 * Testing the relationship between the database and the python code that queries it
 
 #### What it's not good for:
