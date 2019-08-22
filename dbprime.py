@@ -13,18 +13,6 @@ class MockRecord:
     '''
 
     def __init__(self, database_module, database_args, table_name, primary_key_column, **kwargs):
-        # Check if we can even handle the db module before trying anything else
-        try:
-            self.insertion_handler = \
-                self.__class__.insertion_handlers[database_module.__name__]
-
-        except KeyError:
-            error_message = 'Unhandled database module: {} \n Supported modules: {}'\
-                .format(database_module.__name__,
-                        self.__class__.insertion_handlers.keys())
-
-            raise KeyError(error_message)
-
         try:
             self._db_connection = database_module.connect(**database_args)
         except Exception as e:
@@ -42,7 +30,8 @@ class MockRecord:
         for key, value in kwargs.items():
             setattr(self, key, value)
 
-        self.insertion_handler(self)
+        self._insert_record()
+        self._set_primary_key_attribute()
 
     def __del__(self):
         # We're going to assume that if the object doesn't have a primary key set
@@ -62,7 +51,24 @@ class MockRecord:
 
         self._db_connection.close()
 
-    def _insert_postgres_record(self):
+    def _insert_record(self):
+        '''
+        Takes a database-specific sql string as an arg.
+        Inserts a new database record.
+        '''
+        self._db_cursor.execute(self._insert_sql_definition_string())
+        self._db_connection.commit()
+
+    def _insert_sql_definition_string(self):
+        raise NotImplementedError
+
+    def _set_primary_key_attribute(self):
+        raise NotImplementedError
+
+
+class MockPostgresRecord(MockRecord):
+
+    def _insert_sql_definition_string(self):
         sql = """
             INSERT INTO {} ({})
             VALUES ({})
@@ -72,11 +78,21 @@ class MockRecord:
                    ', '.join([str(getattr(self, key)) for key in self.columns]),
                    self.pk_column)
 
-        self._insert_record(sql)
+        return sql
+
+    def _set_primary_key_attribute(self):
+        '''
+        Custom logic to fetch the primary key value that was just inserted
+        and set it as an attribute on the object.
+        The database cursor is still open from the _insert_record call.
+        '''
         primary_key = self._db_cursor.fetchone()[0]
         setattr(self, self.pk_column, primary_key)
 
-    def _insert_mysql_record(self):
+
+class MockMySQLRecord(MockRecord):
+
+    def _insert_sql_definition_string(self):
         # Definitely not an ideal solution. This assumes the user is inserting a
         # record into a table with an AUTO_INCREMENT primary key column.
         sql = """
@@ -86,31 +102,17 @@ class MockRecord:
                    ', '.join(self.columns),
                    ', '.join([str(getattr(self, key)) for key in self.columns]))
 
-        self._insert_record(sql)
+        return sql
+
+    def _set_primary_key_attribute(self):
+        '''
+        Custom logic to fetch the primary key value that was just inserted
+        and set it as an attribute on the object.
+        The database cursor is still open from the _insert_record call.
+        '''
         self._db_cursor.execute("SELECT LAST_INSERT_ID();")
         primary_key = self._db_cursor.fetchone()[0]
         setattr(self, self.pk_column, primary_key)
-
-    def _insert_record(self, sql):
-        '''
-        Takes a database-specific sql string as an arg.
-        Inserts a new database record.
-        '''
-        self._db_cursor.execute(sql)
-        self._db_connection.commit()
-
-    insertion_handlers = {
-        'psycopg2': _insert_postgres_record,
-        'MySQLdb': _insert_mysql_record,
-    }
-
-
-class MockPostgresRecord(MockRecord):
-    pass
-
-
-class MockMySQLRecord(MockRecord):
-    pass
 
 
 def test():
@@ -121,7 +123,7 @@ def test():
         'host': 'localhost'
     }
 
-    mock_rec = MockRecord(psycopg2, dbargs, 'test_table', 'test_tableid')
+    mock_rec = MockPostgresRecord(psycopg2, dbargs, 'test_table', 'test_tableid', num_val=123)
 
 if __name__ == '__main__':
     test()
