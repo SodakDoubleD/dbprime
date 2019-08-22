@@ -104,6 +104,15 @@ class MockRecord:
         'MySQLdb': _insert_mysql_record,
     }
 
+
+class MockPostgresRecord(MockRecord):
+    pass
+
+
+class MockMySQLRecord(MockRecord):
+    pass
+
+
 def test():
     dbargs = {
         'user': 'test',
