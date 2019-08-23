@@ -116,10 +116,19 @@ class MockMySQLRecord(MockRecord):
 class MockSqliteRecord(MockRecord):
 
     def _insert_sql_definition_string(self):
-        pass
+        sql = """
+            INSERT INTO {} ({})
+            VALUES ({});
+        """.format(self.table_name,
+                   ', '.join(self.columns),
+                   ', '.join([str(getattr(self, key)) for key in self.columns]))
+
+        return sql
 
     def _set_primary_key_attribute(self):
-        pass
+        self._db_cursor.execute("SELECT last_insert_rowid();")
+        primary_key = self._db_cursor.fetchone()[0]
+        setattr(self, self.pk_column, primary_key)
 
 
 def test():
