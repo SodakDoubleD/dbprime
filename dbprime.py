@@ -96,7 +96,7 @@ class MockPostgresRecord(MockRecord):
 class MockMySQLRecord(MockRecord):
 
     def _insert_sql_definition_string(self):
-        # Definitely not an ideal solution. This assumes the user is inserting a
+        # Not the best solution, but still works. This assumes the user is inserting a
         # record into a table with an AUTO_INCREMENT primary key column.
         sql = """
             INSERT INTO {} ({})
