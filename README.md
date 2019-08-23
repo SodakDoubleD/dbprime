@@ -19,5 +19,4 @@
 
 
 #### TODO:
-* Add support for more databases than just postgres and mysql
-* Add a more graceful/robust way to return the primary key when inserting mysql records
+* Add a more graceful/robust way to return the primary key when inserting mysql records?
