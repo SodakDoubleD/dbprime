@@ -113,6 +113,15 @@ class MockMySQLRecord(MockRecord):
         setattr(self, self.pk_column, primary_key)
 
 
+class MockSqliteRecord(MockRecord):
+
+    def _insert_sql_definition_string(self):
+        pass
+
+    def _set_primary_key_attribute(self):
+        pass
+
+
 def test():
     dbargs = {
         'user': 'test',
