@@ -53,16 +53,24 @@ class MockRecord:
 
     def _insert_record(self):
         '''
-        Takes a database-specific sql string as an arg.
-        Inserts a new database record.
+        Inserts a new database record based on a database-specific sql string.
         '''
         self._db_cursor.execute(self._insert_sql_definition_string())
         self._db_connection.commit()
 
     def _insert_sql_definition_string(self):
+        '''
+        Returns a sql statement string geared towards inserting a record
+        into a specific database type.
+        '''
         raise NotImplementedError
 
     def _set_primary_key_attribute(self):
+        '''
+        Custom logic to fetch the primary key value that was just inserted
+        and set it as an attribute on the object.
+        The database cursor is still open from the _insert_record call.
+        '''
         raise NotImplementedError
 
 
@@ -81,11 +89,6 @@ class MockPostgresRecord(MockRecord):
         return sql
 
     def _set_primary_key_attribute(self):
-        '''
-        Custom logic to fetch the primary key value that was just inserted
-        and set it as an attribute on the object.
-        The database cursor is still open from the _insert_record call.
-        '''
         primary_key = self._db_cursor.fetchone()[0]
         setattr(self, self.pk_column, primary_key)
 
@@ -105,11 +108,6 @@ class MockMySQLRecord(MockRecord):
         return sql
 
     def _set_primary_key_attribute(self):
-        '''
-        Custom logic to fetch the primary key value that was just inserted
-        and set it as an attribute on the object.
-        The database cursor is still open from the _insert_record call.
-        '''
         self._db_cursor.execute("SELECT LAST_INSERT_ID();")
         primary_key = self._db_cursor.fetchone()[0]
         setattr(self, self.pk_column, primary_key)
