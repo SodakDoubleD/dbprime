@@ -21,7 +21,8 @@ class TestMySQL(unittest.TestCase):
 
     def test_mysql_insert(self):
         test_obj = MockMySQLRecord(MySQLdb, self.dbargs,
-                                   'test_table', 'test_tableid',
+                                   table_name='test_table',
+                                   primary_key_column='test_tableid',
                                    num_val=123)
         self.dbcur.execute("""
             SELECT EXISTS (
@@ -36,7 +37,8 @@ class TestMySQL(unittest.TestCase):
 
     def test_mysql_update(self):
         test_obj = MockMySQLRecord(MySQLdb, self.dbargs,
-                                   'test_table', 'test_tableid',
+                                   table_name='test_table',
+                                   primary_key_column='test_tableid',
                                    num_val=123)
 
         self.dbcur.execute("""
@@ -53,7 +55,8 @@ class TestMySQL(unittest.TestCase):
 
     def test_mysql_delete(self):
         test_obj = MockMySQLRecord(MySQLdb, self.dbargs,
-                                   'test_table', 'test_tableid',
+                                   table_name='test_table',
+                                   primary_key_column='test_tableid',
                                    num_val=123)
         test_tableid = test_obj.test_tableid
         del test_obj
