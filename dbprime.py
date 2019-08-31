@@ -1,4 +1,4 @@
-import psycopg2
+
 
 class MockRecord:
     '''
@@ -129,17 +129,3 @@ class MockSqliteRecord(MockRecord):
         self._db_cursor.execute("SELECT last_insert_rowid();")
         primary_key = self._db_cursor.fetchone()[0]
         setattr(self, self.pk_column, primary_key)
-
-
-def test():
-    dbargs = {
-        'user': 'test',
-        'password': 'test',
-        'database': 'test_db',
-        'host': 'localhost'
-    }
-
-    mock_rec = MockPostgresRecord(psycopg2, dbargs, 'test_table', 'test_tableid', num_val=123)
-
-if __name__ == '__main__':
-    test()
