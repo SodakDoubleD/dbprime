@@ -1,7 +1,5 @@
-
-
 class MockRecord:
-    '''
+    """
     Requires a python database module that conforms to the
     PEP-249 database API specification.
 
@@ -10,9 +8,11 @@ class MockRecord:
 
     Unpacks and inserts a database record based on the passed in kwargs.
     The initialized object contains the newly inserted primary key value.
-    '''
+    """
 
-    def __init__(self, database_module, database_args, table_name, primary_key_column, **kwargs):
+    def __init__(
+        self, database_module, database_args, table_name, primary_key_column, **kwargs
+    ):
         try:
             self._db_connection = database_module.connect(**database_args)
         except Exception as e:
@@ -24,8 +24,10 @@ class MockRecord:
         self.pk_column = primary_key_column
         self.columns = sorted(list(kwargs.keys()))
         if not self.columns:
-            raise Exception('Can\'t insert a database record with no values. ' \
-                'You have to specify columns/values in the kwargs of MockRecord...')
+            raise Exception(
+                "Can't insert a database record with no values. "
+                "You have to specify columns/values in the kwargs of MockRecord..."
+            )
 
         for key, value in kwargs.items():
             setattr(self, key, value)
@@ -38,9 +40,9 @@ class MockRecord:
         # that we failed to insert the record in the first place.
         if hasattr(self, self.pk_column):
             try:
-                sql = 'DELETE FROM {} WHERE {} = {};'.format(self.table_name,
-                                                             self.pk_column,
-                                                             getattr(self, self.pk_column))
+                sql = "DELETE FROM {} WHERE {} = {};".format(
+                    self.table_name, self.pk_column, getattr(self, self.pk_column)
+                )
 
                 self._db_cursor.execute(sql)
                 self._db_connection.commit()
@@ -52,39 +54,40 @@ class MockRecord:
         self._db_connection.close()
 
     def _insert_record(self):
-        '''
+        """
         Inserts a new database record based on a database-specific sql string.
-        '''
+        """
         self._db_cursor.execute(self._insert_sql_definition_string())
         self._db_connection.commit()
 
     def _insert_sql_definition_string(self):
-        '''
+        """
         Returns a sql statement string geared towards inserting a record
         into a specific database type.
-        '''
+        """
         raise NotImplementedError
 
     def _set_primary_key_attribute(self):
-        '''
+        """
         Custom logic to fetch the primary key value that was just inserted
         and set it as an attribute on the object.
         The database cursor is still open from the _insert_record call.
-        '''
+        """
         raise NotImplementedError
 
 
 class MockPostgresRecord(MockRecord):
-
     def _insert_sql_definition_string(self):
         sql = """
             INSERT INTO {} ({})
             VALUES ({})
             RETURNING {};
-        """.format(self.table_name,
-                   ', '.join(self.columns),
-                   ', '.join([str(getattr(self, key)) for key in self.columns]),
-                   self.pk_column)
+        """.format(
+            self.table_name,
+            ", ".join(self.columns),
+            ", ".join([str(getattr(self, key)) for key in self.columns]),
+            self.pk_column,
+        )
 
         return sql
 
@@ -94,16 +97,17 @@ class MockPostgresRecord(MockRecord):
 
 
 class MockMySQLRecord(MockRecord):
-
     def _insert_sql_definition_string(self):
         # Not the best solution, but still works. This assumes the user is inserting a
         # record into a table with an AUTO_INCREMENT primary key column.
         sql = """
             INSERT INTO {} ({})
             VALUES ({});
-        """.format(self.table_name,
-                   ', '.join(self.columns),
-                   ', '.join([str(getattr(self, key)) for key in self.columns]))
+        """.format(
+            self.table_name,
+            ", ".join(self.columns),
+            ", ".join([str(getattr(self, key)) for key in self.columns]),
+        )
 
         return sql
 
@@ -114,14 +118,15 @@ class MockMySQLRecord(MockRecord):
 
 
 class MockSqliteRecord(MockRecord):
-
     def _insert_sql_definition_string(self):
         sql = """
             INSERT INTO {} ({})
             VALUES ({});
-        """.format(self.table_name,
-                   ', '.join(self.columns),
-                   ', '.join([str(getattr(self, key)) for key in self.columns]))
+        """.format(
+            self.table_name,
+            ", ".join(self.columns),
+            ", ".join([str(getattr(self, key)) for key in self.columns]),
+        )
 
         return sql
 
